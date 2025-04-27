@@ -2,22 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // <- Penting pakai process.env.PORT untuk Render!
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-// Simple route untuk testing
+// Route untuk pengecekan server
 app.get('/', (req, res) => {
   res.send('Hello from WhisperBot!');
 });
 
-// Webhook route untuk Line
+// **Route WAJIB ini untuk LINE Webhook**
 app.post('/webhook', (req, res) => {
   const events = req.body.events;
   
   if (events) {
     events.forEach(event => {
-      console.log('User said:', event.message.text);
+      console.log('User said:', event.message.text); // Untuk debug di console
     });
   }
 
