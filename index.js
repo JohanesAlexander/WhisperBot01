@@ -5,7 +5,7 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const CHANNEL_ACCESS_TOKEN = 'PASTE-TOKEN-KAMU-DISINI'; // <<< Ganti ini dengan token asli
+const CHANNEL_ACCESS_TOKEN = 'JM+7635bcgWRCjaTwo0yxayOHZWTfKrofygJN1czg+61D8iKT49/npXzMgsFt+38sPUakvy56kRvIsQON9QRYcYOgSn36PtcApeb+5K4HRZC9ehLFnej/s8UE8jgeuwF/niGzItNIbakwfoE+cBJtwdB04t89/1O/w1cDnyilFU='; // <<< Ganti ini dengan token asli
 
 app.use(bodyParser.json());
 
