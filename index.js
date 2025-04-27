@@ -5,7 +5,7 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const CHANNEL_ACCESS_TOKEN = 'JM+7635bcgWRCjaTwo0yxayOHZWTfKrofygJN1czg+61D8iKT49/npXzMgsFt+38sPUakvy56kRvIsQON9QRYcYOgSn36PtcApeb+5K4HRZC9ehLFnej/s8UE8jgeuwF/niGzItNIbakwfoE+cBJtwdB04t89/1O/w1cDnyilFU='; // <<< Ganti ini dengan token asli
+const CHANNEL_ACCESS_TOKEN = 'JM+7635bcgWRCjaTwo0yxayOHZWTfKrofygJN1czg+61D8iKT49/npXzMgsFt+38sPUakvy56kRvIsQON9QRYcYOgSn36PtcApeb+5K4HRZC9ehLFnej/s8UE8jgeuwF/niGzItNIbakwfoE+cBJtwdB04t89/1O/w1cDnyilFU=';
 
 app.use(bodyParser.json());
 
@@ -16,8 +16,11 @@ app.get('/', (req, res) => {
 app.post('/webhook', (req, res) => {
   const events = req.body.events;
 
+  // ✅ BALAS DULU ke LINE, jangan nunggu axios!
+  res.status(200).send('OK');
+
   if (events) {
-    events.forEach(async (event) => {
+    events.forEach((event) => {
       const replyToken = event.replyToken;
       const userMessage = event.message.text;
 
@@ -25,7 +28,6 @@ app.post('/webhook', (req, res) => {
 
       let replyText = '';
 
-      // === Logika berdasarkan keyword ===
       if (!userMessage) {
         replyText = "Sorry, I didn't catch that.";
       } else if (userMessage.toLowerCase().includes('i need a boost of self-love')) {
@@ -39,16 +41,13 @@ app.post('/webhook', (req, res) => {
       } else if (userMessage.toLowerCase().includes('show me how awesome i did this week')) {
         replyText = `📚 Another week completed! 🎉\nYou handled it — good days, hard days, everything.\n\nI'm proud of you. 💙\n\nWould you like to see your mood summary for this week?\n[✨ Yes, show me!] [❌ No, thanks]`;
       } else if (userMessage.toLowerCase().includes('hey! i need a little help here')) {
-        // Kalau mau personalize dengan nama user, perlu dapet profile (nanti bisa tambah)
         replyText = `📖 Here's how you can use me!\n\n📝 Share your feelings\nType: "Whisper Box" or "I want to share my thoughts"\n\n✨ Get a positive reminder\nType: "Self Care" or "I need a boost of self-love"\n\n😂 Laugh with a joke\nType: "Random Joke" or "Hit me with a funny joke"\n\n🕊️ Send a secret safely\nType: "Secret Message" or "Psst... I have a secret to tell"\n\n📚 See your weekly progress\nType: "Week Recap" or "Show me my week recap"\n\n🏠 Feel lost? Just type "Menu" to start again!`;
       } else {
-        // Default: echo message biasa
         replyText = `You said: ${userMessage}`;
       }
-      // === End logic ===
 
-      // Kirim balasan ke user
-      await axios.post(
+      // ✅ AXIOS POST dilakukan SETELAH response 200 dikirim
+      axios.post(
         'https://api.line.me/v2/bot/message/reply',
         {
           replyToken: replyToken,
@@ -65,11 +64,12 @@ app.post('/webhook', (req, res) => {
             'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`
           }
         }
-      );
+      ).catch(err => {
+        console.error('Error sending reply:', err.message);
+      });
+
     });
   }
-
-  res.status(200).send('OK');
 });
 
 app.listen(PORT, () => {
